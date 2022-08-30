@@ -1,13 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Divider, Row, Col } from "antd";
 import {
+  Form,
+  Field,
   useFormik,
   FieldArray,
-  FormikProvider,
   ErrorMessage,
-  Field,
-  Form,
-  useFormikContext,
+  FormikProvider,
 } from "formik";
 
 import "antd/dist/antd.css";
@@ -24,13 +23,13 @@ const App = () => {
       contractParties: [formInitialValues],
     },
     onSubmit: (values) => {
-      const parsedValue = JSON.stringify(values, null, 2);
-
-      console.log(parsedValue);
-
-      alert(parsedValue);
+      alert(JSON.stringify(values, null, 2));
     },
   });
+
+  const [qtdPart, setQtdPart] = useState(
+    formik.values.contractParties?.length || 1
+  );
 
   useEffect(() => {
     formik.values.contractParties = formik.values.contractParties.map(
@@ -39,7 +38,9 @@ const App = () => {
         part: `Parte ${String.fromCharCode(65 + index)}`,
       })
     );
-  });
+
+    return () => {};
+  }, [qtdPart]);
 
   return (
     <div style={{ margin: 24 }}>
@@ -67,7 +68,10 @@ const App = () => {
                                   <button
                                     type="button"
                                     className="secondary"
-                                    onClick={() => formActions.remove(index)}
+                                    onClick={() => {
+                                      setQtdPart(qtdPart + 1);
+                                      formActions.remove(index);
+                                    }}
                                   >
                                     X
                                   </button>
@@ -116,8 +120,6 @@ const App = () => {
                         );
                       })}
 
-                    <hr />
-
                     <div
                       style={{
                         display: "flex",
@@ -126,10 +128,11 @@ const App = () => {
                       }}
                     >
                       <button
-                        disabled={formik.values.contractParties.length === 5}
+                        disabled={qtdPart === 26}
                         type="button"
                         className="secondary"
                         onClick={() => {
+                          setQtdPart(qtdPart + 1);
                           formActions.push(formInitialValues);
                         }}
                       >
