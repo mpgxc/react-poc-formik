@@ -69,7 +69,7 @@ const App = () => {
                                     type="button"
                                     className="secondary"
                                     onClick={() => {
-                                      setQtdPart(qtdPart + 1);
+                                      setQtdPart(qtdPart - 1);
                                       formActions.remove(index);
                                     }}
                                   >
