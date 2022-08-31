@@ -149,6 +149,7 @@ const App = () => {
         <Col span={2}>
           <Divider type="vertical" style={{ height: "100%", color: "#000" }} />
         </Col>
+        <h3>qtdPart: {qtdPart}</h3>
         <Col span={11}>
           <pre>{JSON.stringify(formik.values, null, 4)}</pre>
         </Col>
