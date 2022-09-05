@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { useContext, useEffect, useState } from "react";
 import { Divider, Row, Col } from "antd";
 import {
   Form,
@@ -10,20 +11,35 @@ import {
 } from "formik";
 
 import "antd/dist/antd.css";
+import SelectContractParties from "./CustomSelect";
+import { ContractPartsContext, ContractPartsContextType } from "./context";
+
+export type ContractPartType = {
+  id: string;
+  name: string;
+  part: string;
+};
 
 const formInitialValues = {
+  id: uuidv4(),
   name: "",
-  email: "",
   part: "Parte A",
 };
 
 const App = () => {
+  const { contractParts, saveContractPart } =
+    useContext<ContractPartsContextType>(ContractPartsContext);
+
   const formik = useFormik({
     initialValues: {
-      contractParties: [formInitialValues],
+      contractParties: contractParts.length
+        ? contractParts
+        : [formInitialValues],
     },
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      saveContractPart(values.contractParties);
+      formik.resetForm();
+      setQtdPart(1);
     },
   });
 
@@ -45,7 +61,7 @@ const App = () => {
   return (
     <div style={{ margin: 24 }}>
       <Row>
-        <Col span={11}>
+        <Col span={6}>
           <FormikProvider value={formik}>
             <Form onSubmit={formik.handleSubmit}>
               <FieldArray
@@ -95,25 +111,6 @@ const App = () => {
                                   className="field-error"
                                 />
                               </div>
-
-                              <div className="col">
-                                <label
-                                  htmlFor={`contractParties.${index}.email`}
-                                >
-                                  Email:{" "}
-                                </label>
-                                <Field
-                                  name={`contractParties.${index}.email`}
-                                  placeholder="Digite seu email"
-                                  type="email"
-                                />
-                                <ErrorMessage
-                                  name={`contractParties.${index}.name`}
-                                  component="div"
-                                  className="field-error"
-                                />
-                              </div>
-
                               <hr />
                             </div>
                           </>
@@ -133,7 +130,10 @@ const App = () => {
                         className="secondary"
                         onClick={() => {
                           setQtdPart(qtdPart + 1);
-                          formActions.push(formInitialValues);
+                          formActions.push({
+                            ...formInitialValues,
+                            id: uuidv4(),
+                          });
                         }}
                       >
                         Adicionar
@@ -146,12 +146,21 @@ const App = () => {
             </Form>
           </FormikProvider>
         </Col>
-        <Col span={2}>
+
+        <Col span={1}>
           <Divider type="vertical" style={{ height: "100%", color: "#000" }} />
         </Col>
-        <h3>qtdPart: {qtdPart}</h3>
-        <Col span={11}>
+
+        <Col span={8}>
           <pre>{JSON.stringify(formik.values, null, 4)}</pre>
+        </Col>
+
+        <Col span={1}>
+          <Divider type="vertical" style={{ height: "100%", color: "#000" }} />
+        </Col>
+
+        <Col span={8}>
+          <SelectContractParties />
         </Col>
       </Row>
     </div>
